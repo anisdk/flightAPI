@@ -1,8 +1,8 @@
-app.controller('employeesController', function($scope, $http, API_URL) {
-    //retrieve employees listing from API
-    $http.get(API_URL + "employees")
+app.controller('flightsController', function($scope, $http, API_URL) {
+    //retrieve flights listing from API
+    $http.get(API_URL + "flight")
             .success(function(response) {
-                $scope.employees = response;
+                $scope.flights = response;
             });
     
     //show modal form
@@ -11,16 +11,34 @@ app.controller('employeesController', function($scope, $http, API_URL) {
 
         switch (modalstate) {
             case 'add':
-                $scope.form_title = "Add New Employee";
-                break;
-            case 'edit':
-                $scope.form_title = "Employee Detail";
-                $scope.id = id;
-                $http.get(API_URL + 'employees/' + id)
+                $scope.form_title = "Add New Flight";
+                $http.get(API_URL + 'airport')
                         .success(function(response) {
                             console.log(response);
-                            $scope.employee = response;
+                            $scope.airports = response;
+                        });	
+                $http.get(API_URL + 'trip')
+                        .success(function(response) {
+                            console.log(response);
+                            $scope.trips = response;
+                        });									
+				$scope.id = null;
+				
+                break;
+            case 'edit':
+                $scope.form_title = "Flight Detail";
+                $scope.id = id;
+                $http.get(API_URL + 'flight/' + id)
+                        .success(function(response) {
+                            console.log(response);
+                            $scope.flight = response;
                         });
+						
+                $http.get(API_URL + 'airport')
+                        .success(function(response) {
+                            console.log(response);
+                            $scope.airports = response;
+                        });						
                 break;
             default:
                 break;
@@ -31,9 +49,9 @@ app.controller('employeesController', function($scope, $http, API_URL) {
 
     //save new record / update existing record
     $scope.save = function(modalstate, id) {
-        var url = API_URL + "employees";
+        var url = API_URL + "flight";
         
-        //append employee id to the URL if the form is in edit mode
+        //append flight id to the URL if the form is in edit mode
         if (modalstate === 'edit'){
             url += "/" + id;
         }
@@ -41,7 +59,7 @@ app.controller('employeesController', function($scope, $http, API_URL) {
         $http({
             method: 'POST',
             url: url,
-            data: $.param($scope.employee),
+            data: $.param($scope.flight),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(response) {
             console.log(response);
@@ -58,7 +76,7 @@ app.controller('employeesController', function($scope, $http, API_URL) {
         if (isConfirmDelete) {
             $http({
                 method: 'DELETE',
-                url: API_URL + 'employees/' + id
+                url: API_URL + 'flight/' + id
             }).
                     success(function(data) {
                         console.log(data);

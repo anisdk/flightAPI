@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Flight;
 use App\Http\Controllers\Controller;
+use App\Airport;
 
 class Flights extends Controller
 {
@@ -18,9 +19,10 @@ class Flights extends Controller
      */
     public function index($id = null) {
         if ($id == null) {
-            return Flight::orderBy('id', 'asc')->get();
+            return Flight::with('dep_airport')->with('dest_airport')->with('trip')->get();
         } else {
-            return $this->show($id);
+            return Flight::with('dep_airport')->with('dest_airport')->with('trip')->where('id','=', $id)->first();
+			
         }
     }
 
@@ -33,9 +35,9 @@ class Flights extends Controller
     public function store(Request $request) {
         $flight = new Flight;
 
-        $flight->dep_airport = $request->input('dep_airport');
-        $flight->dest_airport = $request->input('dest_airport');
-        $flight->trip_id = $request->input('trip_id');
+        $flight->dep_airport = $request->input('dep_airport.id');
+        $flight->dest_airport = $request->input('dest_airport.id');
+        $flight->trip_id = $request->input('trip_id.id');
         $flight->save();
 
         return 'flight record successfully created with id ' . $flight->id;
@@ -61,9 +63,8 @@ class Flights extends Controller
     public function update(Request $request, $id) {
         $flight = Flight::find($id);
 
-        $flight->dep_airport = $request->input('dep_airport');
-        $flight->dest_airport = $request->input('dest_airport');
-        $flight->trip_id = $request->input('trip_id');
+        $flight->dep_airport = $request->input('dep_airport.id');
+        $flight->dest_airport = $request->input('dest_airport.id');
         $flight->save();
 
         return "Sucess updating user #" . $flight->id;
@@ -75,11 +76,11 @@ class Flights extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function destroy(Request $request) {
-        $flight = Flight::find($request->input('id'));
+    public function destroy(Request $request, $id) {
+        $flight = Flight::find($id);
 
         $flight->delete();
 
-        return "Flight record successfully deleted #" . $request->input('id');
+        return "Flight record successfully deleted #" . $id;
     }
 }

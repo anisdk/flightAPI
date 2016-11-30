@@ -19,3 +19,6 @@ Route::get('/api/v1/flight/{id?}', 'Flights@index');
 Route::post('/api/v1/flight', 'Flights@store');
 Route::post('/api/v1/flight/{id}', 'Flights@update');
 Route::delete('/api/v1/flight/{id}', 'Flights@destroy');
+
+Route::get('/api/v1/airport/{id?}', 'Airports@index');
+Route::get('/api/v1/trip/{id?}', 'Trips@index');
